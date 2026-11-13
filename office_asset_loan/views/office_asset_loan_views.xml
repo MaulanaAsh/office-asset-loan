@@ -24,6 +24,12 @@
         <field name="arch" type="xml">
             <form string="Loan">
                 <header>
+                    <button name="action_borrow" string="Borrow" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_return" string="Return" type="object"
+                            class="btn-primary" invisible="state != 'borrowed'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+            invisible="state != 'draft'"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,borrowed,returned"/>
                 </header>

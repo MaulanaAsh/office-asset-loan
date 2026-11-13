@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class OfficeAssetLoan(models.Model):
@@ -81,3 +81,37 @@ class OfficeAssetLoan(models.Model):
                     or 'New'
                 )
         return super().create(vals_list)
+
+    def action_borrow(self):
+        for loan in self:
+            if loan.state != 'draft':
+                raise UserError('Only loans in Draft status can be borrowed.')
+            if loan.asset_id.condition == 'damaged':
+                raise UserError(
+                    f'Asset "{loan.asset_id.name}" is damaged and cannot be borrowed.'
+                )
+            active_loan = self.search([
+                ('asset_id', '=', loan.asset_id.id),
+                ('state', '=', 'borrowed'),
+                ('id', '!=', loan.id),
+            ], limit=1)
+            if active_loan:
+                raise UserError(
+                    f'Asset "{loan.asset_id.name}" is currently borrowed ({active_loan.name}).'
+                )
+            loan.state = 'borrowed'
+
+    def action_return(self):
+        for loan in self:
+            if loan.state != 'borrowed':
+                raise UserError('Only loans in Borrowed status can be returned.')
+            loan.write({
+                'state': 'returned',
+                'return_date': fields.Date.context_today(loan),
+            })
+
+    def action_cancel(self):
+        for loan in self:
+            if loan.state != 'draft':
+                raise UserError('Only loans in Draft status can be cancelled.')
+            loan.state = 'cancelled'
