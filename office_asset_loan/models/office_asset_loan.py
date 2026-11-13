@@ -115,3 +115,11 @@ class OfficeAssetLoan(models.Model):
             if loan.state != 'draft':
                 raise UserError('Only loans in Draft status can be cancelled.')
             loan.state = 'cancelled'
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_borrowed_or_returned(self):
+        for loan in self:
+            if loan.state in ('borrowed', 'returned'):
+                raise UserError(
+                    'Loans with status Borrowed or Returned cannot be deleted.'
+                )
