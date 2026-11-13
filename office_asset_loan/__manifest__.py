@@ -6,7 +6,12 @@
     'author': 'Maulana Ash Shddiq',
     'license': 'LGPL-3',
     'depends': ['base'],
-    'data': ['security/ir.model.access.csv',],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/office_asset_views.xml',
+        'views/office_asset_loan_views.xml',
+        'views/office_asset_menus.xml',
+    ],
     'application': True,
     'installable': True,
 }
