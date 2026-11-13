@@ -71,3 +71,13 @@ class OfficeAssetLoan(models.Model):
                 and bool(loan.due_date)
                 and loan.due_date < today
             )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = (
+                    self.env['ir.sequence'].next_by_code('office.asset.loan')
+                    or 'New'
+                )
+        return super().create(vals_list)

@@ -8,6 +8,7 @@
     'depends': ['base'],
     'data': [
         'security/ir.model.access.csv',
+        'data/office_asset_loan_sequence.xml',
         'views/office_asset_views.xml',
         'views/office_asset_loan_views.xml',
         'views/office_asset_menus.xml',
