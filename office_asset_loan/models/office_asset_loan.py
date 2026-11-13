@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class OfficeAssetLoan(models.Model):
@@ -37,6 +40,19 @@ class OfficeAssetLoan(models.Model):
         string='Duration (Days)', compute='_compute_duration_days',
     )
     is_overdue = fields.Boolean(string='Overdue', compute='_compute_is_overdue')
+
+    @api.constrains('loan_date', 'due_date')
+    def _check_due_date(self):
+        for loan in self:
+            if loan.loan_date and loan.due_date and loan.due_date < loan.loan_date:
+                raise ValidationError(
+                    'Due date cannot be earlier than the loan date.'
+                )
+
+    @api.onchange('loan_date')
+    def _onchange_loan_date(self):
+        if self.loan_date and (not self.due_date or self.due_date < self.loan_date):
+            self.due_date = self.loan_date + timedelta(days=7)
 
     @api.depends('loan_date', 'due_date')
     def _compute_duration_days(self):
