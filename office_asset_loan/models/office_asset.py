@@ -5,6 +5,11 @@ class OfficeAsset(models.Model):
     _name = 'office.asset'
     _description = 'Office Asset'
 
+    _code_unique = models.Constraint(
+        'UNIQUE(code)',
+        'Asset code must be unique!',
+    )
+
     name = fields.Char(string='Asset Name', required=True)
     code = fields.Char(string='Code', required=True)
     category = fields.Selection(
