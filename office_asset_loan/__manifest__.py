@@ -6,7 +6,7 @@
     'author': 'Maulana Ash Shddiq',
     'license': 'LGPL-3',
     'depends': ['base'],
-    'data': [],
+    'data': ['security/ir.model.access.csv',],
     'application': True,
     'installable': True,
 }
