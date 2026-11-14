@@ -95,7 +95,7 @@ class OfficeAssetLoan(models.Model):
                     f'Asset "{loan.asset_id.name}" is damaged '
                     'and cannot be borrowed.'
                 )
-                
+
             active_loan = self.search([
                 ('asset_id', '=', loan.asset_id.id),
                 ('state', '=', 'borrowed'),
