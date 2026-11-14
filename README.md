@@ -33,7 +33,7 @@ Modul custom Odoo untuk mencatat aset kantor (proyektor, laptop, kabel, kamera, 
 1. Clone repo ini:
 
    ```bash
-   git clone https://github.com/USERNAME/office-asset-loan.git
+   git clone https://github.com/MaulanaAsh/office-asset-loan.git
    ```
 
 2. Tambahkan folder hasil clone (folder yang berisi `office_asset_loan/`) ke `addons_path` di file konfigurasi Odoo (`odoo.conf`), lalu restart Odoo.
