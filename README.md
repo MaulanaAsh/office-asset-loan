@@ -12,8 +12,15 @@ Modul custom Odoo untuk mencatat aset kantor (proyektor, laptop, kabel, kamera, 
 - **Peminjaman** (`office.asset.loan`): nomor otomatis (LOAN/0001, LOAN/0002, dst.), aset, peminjam (otomatis pengguna yang login), tanggal pinjam, jatuh tempo, tanggal kembali, keperluan, dan lama pinjam dalam hari.
 - **Alur status:** Draft, lalu Borrowed, lalu Returned, atau Draft lalu Cancelled, dengan tombol **Borrow**, **Return**, dan **Cancel**.
 - **Peminjaman lewat jatuh tempo** ditandai merah di daftar, dan peminjaman Returned atau Cancelled ditampilkan redup.
-- **Pencarian:** filter aset *Available*, filter peminjaman *Borrowed*, dan pengelompokan berdasarkan kategori, peminjam, atau status.
+- **Pencarian:** filter aset *Available*, filter peminjaman *Borrowed* dan *Overdue*, serta pengelompokan berdasarkan kategori, peminjam, atau status.
 - **Hak akses:** user internal bisa melihat menu, membuat, dan mengubah aset serta peminjaman.
+
+### Fitur bonus
+
+- **Tombol pintar "Loans"** di form aset: menampilkan jumlah peminjaman aset tersebut dan membuka daftar peminjamannya saat diklik.
+- **Filter "Overdue"** di daftar peminjaman: hanya menampilkan peminjaman berstatus Borrowed yang jatuh temponya sudah lewat dari hari ini.
+- **Record rule:** user internal biasa hanya melihat peminjaman miliknya sendiri, sedangkan Administrator melihat semuanya.
+- **Data demo:** 4 aset (`DEMO-001` sampai `DEMO-004`) dan 4 peminjaman (`LOAN/DEMO-01` sampai `LOAN/DEMO-04`) yang hanya dimuat pada database dengan demo data aktif.
 
 ## Aturan Bisnis
 
@@ -49,6 +56,16 @@ Modul custom Odoo untuk mencatat aset kantor (proyektor, laptop, kabel, kamera, 
    - **Lewat tampilan Odoo:** aktifkan *Developer Mode*, buka **Apps**, klik **Update Apps List**, cari **Office Asset Loan**, lalu klik **Install**.
 
 4. Buka aplikasi **Office Asset Loan** dari menu utama. Menu **Loans** dan **Assets** akan tersedia.
+
+### Data demo
+
+Data demo hanya dimuat saat database **dibuat** dengan demo data aktif. Contohnya lewat perintah:
+
+```bash
+python odoo-bin -c odoo.conf -d nama_database_baru -i office_asset_loan --with-demo
+```
+
+Database yang sudah ada tidak akan menerima data demo walaupun modul di-upgrade.
 
 ## Screenshot
 
@@ -92,6 +109,35 @@ Form aset dengan tab Loan History:
 
 ![Form aset Kamer Fuji Film](screenshots/12-asset-form-kamer-fuji-film.png)
 
+### Fitur bonus
+
+Tombol pintar **Loans** di form aset (menampilkan jumlah peminjaman):
+
+![Tombol pintar Loans](screenshots/13-smart-button-loans.png)
+
+Filter **Overdue** di daftar peminjaman:
+
+![Filter Overdue](screenshots/14-filter-overdue.png)
+
+Record rule: user biasa (Marc Demo) hanya melihat peminjamannya sendiri:
+
+![Record rule](screenshots/15-record-rule-own-loans.png)
+
+Data demo, daftar peminjaman dan daftar aset:
+
+![Data demo peminjaman](screenshots/16-demo-data-loans.png)
+
+![Data demo aset](screenshots/17-demo-data-assets.png)
+
+## Catatan Teknis
+
+Karena record rule membatasi peminjaman yang bisa dilihat user biasa, dua pengecekan yang harus melihat **semua** peminjaman dibuat tetap akurat:
+
+- `action_borrow` mencari peminjaman aktif lain dengan `sudo()`, sehingga aset yang sedang dipinjam orang lain tetap tidak bisa dipinjam ganda (BR-4).
+- Kolom *Available* dihitung dengan `sudo()`, dan field `loan_ids` memakai `bypass_search_access=True` agar filter *Available* di daftar aset juga memperhitungkan peminjaman milik user lain.
+
+Kolom *Available* hanya melihat ada atau tidaknya peminjaman berstatus Borrowed. Aset berkondisi Damaged tetap ditolak saat tombol Borrow ditekan (BR-4).
+
 ## Struktur Modul
 
 ```
@@ -103,12 +149,15 @@ office-asset-loan/
     ├── __manifest__.py
     ├── data/
     │   └── office_asset_loan_sequence.xml
+    ├── demo/
+    │   └── office_asset_loan_demo.xml
     ├── models/
     │   ├── __init__.py
     │   ├── office_asset.py
     │   └── office_asset_loan.py
     ├── security/
-    │   └── ir.model.access.csv
+    │   ├── ir.model.access.csv
+    │   └── office_asset_loan_security.xml
     └── views/
         ├── office_asset_views.xml
         ├── office_asset_loan_views.xml
@@ -118,3 +167,5 @@ office-asset-loan/
 ## Pengujian
 
 Modul diuji pada database baru dengan 12 skenario uji dari tugas: pemasangan tanpa WARNING, pembuatan aset, penolakan kode kembar, nomor peminjaman otomatis, validasi tanggal, Borrow dan Return, penolakan peminjaman ganda dan aset rusak, penolakan hapus peminjaman Borrowed, tab Loan History, dan akses sebagai user internal biasa (bukan Administrator).
+
+Fitur bonus diuji secara terpisah: tombol pintar dan filter Overdue pada data biasa, record rule dengan dua user (user biasa tidak bisa meminjam aset yang sedang dipinjam Administrator), dan pemasangan pada database baru dengan `--with-demo`.
