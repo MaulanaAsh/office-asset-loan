@@ -14,6 +14,9 @@
         'views/office_asset_loan_views.xml',
         'views/office_asset_menus.xml',
     ],
+    'demo': [
+        'demo/office_asset_loan_demo.xml',
+    ],
     'application': True,
     'installable': True,
 }

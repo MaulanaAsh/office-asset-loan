@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Assets -->
+    <record id="demo_asset_laptop" model="office.asset">
+        <field name="name">Laptop Lenovo ThinkPad</field>
+        <field name="code">DEMO-001</field>
+        <field name="category">electronics</field>
+        <field name="condition">good</field>
+        <field name="purchase_date"
+               eval="(DateTime.today() - timedelta(days=240)).strftime('%Y-%m-%d')"/>
+    </record>
+
+    <record id="demo_asset_chair" model="office.asset">
+        <field name="name">Kursi Kerja Ergonomis</field>
+        <field name="code">DEMO-002</field>
+        <field name="category">furniture</field>
+        <field name="condition">fair</field>
+    </record>
+
+    <record id="demo_asset_motorcycle" model="office.asset">
+        <field name="name">Motor Operasional</field>
+        <field name="code">DEMO-003</field>
+        <field name="category">vehicle</field>
+        <field name="condition">good</field>
+    </record>
+
+    <record id="demo_asset_camera" model="office.asset">
+        <field name="name">Kamera DSLR (lensa retak)</field>
+        <field name="code">DEMO-004</field>
+        <field name="category">electronics</field>
+        <field name="condition">damaged</field>
+    </record>
+
+    <!-- Loans: explicit names keep the LOAN/0001 sequence free for real use -->
+    <record id="demo_loan_laptop_overdue" model="office.asset.loan">
+        <field name="name">LOAN/DEMO-01</field>
+        <field name="asset_id" ref="demo_asset_laptop"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="purpose">Presentasi ke klien</field>
+        <field name="loan_date"
+               eval="(DateTime.today() - timedelta(days=10)).strftime('%Y-%m-%d')"/>
+        <field name="due_date"
+               eval="(DateTime.today() - timedelta(days=3)).strftime('%Y-%m-%d')"/>
+        <field name="state">borrowed</field>
+    </record>
+
+    <record id="demo_loan_chair_returned" model="office.asset.loan">
+        <field name="name">LOAN/DEMO-02</field>
+        <field name="asset_id" ref="demo_asset_chair"/>
+        <field name="borrower_id" ref="base.user_demo"/>
+        <field name="purpose">Kursi tambahan untuk rapat</field>
+        <field name="loan_date"
+               eval="(DateTime.today() - timedelta(days=14)).strftime('%Y-%m-%d')"/>
+        <field name="due_date"
+               eval="(DateTime.today() - timedelta(days=7)).strftime('%Y-%m-%d')"/>
+        <field name="return_date"
+               eval="(DateTime.today() - timedelta(days=8)).strftime('%Y-%m-%d')"/>
+        <field name="state">returned</field>
+    </record>
+
+    <record id="demo_loan_motorcycle_borrowed" model="office.asset.loan">
+        <field name="name">LOAN/DEMO-03</field>
+        <field name="asset_id" ref="demo_asset_motorcycle"/>
+        <field name="borrower_id" ref="base.user_demo"/>
+        <field name="purpose">Mengantar dokumen ke kantor cabang</field>
+        <field name="loan_date"
+               eval="(DateTime.today() - timedelta(days=1)).strftime('%Y-%m-%d')"/>
+        <field name="due_date"
+               eval="(DateTime.today() + timedelta(days=6)).strftime('%Y-%m-%d')"/>
+        <field name="state">borrowed</field>
+    </record>
+
+    <record id="demo_loan_camera_draft" model="office.asset.loan">
+        <field name="name">LOAN/DEMO-04</field>
+        <field name="asset_id" ref="demo_asset_camera"/>
+        <field name="borrower_id" ref="base.user_admin"/>
+        <field name="purpose">Dokumentasi acara kantor</field>
+        <field name="loan_date"
+               eval="DateTime.today().strftime('%Y-%m-%d')"/>
+        <field name="due_date"
+               eval="(DateTime.today() + timedelta(days=7)).strftime('%Y-%m-%d')"/>
+    </record>
+</odoo>
