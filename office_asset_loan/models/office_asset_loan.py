@@ -39,19 +39,23 @@ class OfficeAssetLoan(models.Model):
     duration_days = fields.Integer(
         string='Duration (Days)', compute='_compute_duration_days',
     )
-    is_overdue = fields.Boolean(string='Overdue', compute='_compute_is_overdue')
+    is_overdue = fields.Boolean(
+        string='Overdue', compute='_compute_is_overdue'
+    )
 
     @api.constrains('loan_date', 'due_date')
     def _check_due_date(self):
         for loan in self:
-            if loan.loan_date and loan.due_date and loan.due_date < loan.loan_date:
+            if (loan.loan_date and loan.due_date
+                    and loan.due_date < loan.loan_date):
                 raise ValidationError(
                     'Due date cannot be earlier than the loan date.'
                 )
 
     @api.onchange('loan_date')
     def _onchange_loan_date(self):
-        if self.loan_date and (not self.due_date or self.due_date < self.loan_date):
+        if self.loan_date and (
+                not self.due_date or self.due_date < self.loan_date):
             self.due_date = self.loan_date + timedelta(days=7)
 
     @api.depends('loan_date', 'due_date')
@@ -88,8 +92,10 @@ class OfficeAssetLoan(models.Model):
                 raise UserError('Only loans in Draft status can be borrowed.')
             if loan.asset_id.condition == 'damaged':
                 raise UserError(
-                    f'Asset "{loan.asset_id.name}" is damaged and cannot be borrowed.'
+                    f'Asset "{loan.asset_id.name}" is damaged '
+                    'and cannot be borrowed.'
                 )
+                
             active_loan = self.search([
                 ('asset_id', '=', loan.asset_id.id),
                 ('state', '=', 'borrowed'),
@@ -97,14 +103,17 @@ class OfficeAssetLoan(models.Model):
             ], limit=1)
             if active_loan:
                 raise UserError(
-                    f'Asset "{loan.asset_id.name}" is currently borrowed ({active_loan.name}).'
+                    f'Asset "{loan.asset_id.name}" is currently borrowed '
+                    f'({active_loan.name}).'
                 )
             loan.state = 'borrowed'
 
     def action_return(self):
         for loan in self:
             if loan.state != 'borrowed':
-                raise UserError('Only loans in Borrowed status can be returned.')
+                raise UserError(
+                    'Only loans in Borrowed status can be returned.'
+                )
             loan.write({
                 'state': 'returned',
                 'return_date': fields.Date.context_today(loan),

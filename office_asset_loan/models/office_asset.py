@@ -35,8 +35,12 @@ class OfficeAsset(models.Model):
     note = fields.Text(string='Note')
     active = fields.Boolean(default=True)
     loan_ids = fields.One2many('office.asset.loan', 'asset_id', string='Loans')
-    is_available = fields.Boolean(string='Available', compute='_compute_is_available')
-    loan_count = fields.Integer(string='Loan Count', compute='_compute_loan_count')
+    is_available = fields.Boolean(
+        string='Available', compute='_compute_is_available',
+    )
+    loan_count = fields.Integer(
+        string='Loan Count', compute='_compute_loan_count',
+    )
 
     @api.depends('loan_ids.state')
     def _compute_is_available(self):
