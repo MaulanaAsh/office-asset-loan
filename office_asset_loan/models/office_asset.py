@@ -34,7 +34,10 @@ class OfficeAsset(models.Model):
     )
     note = fields.Text(string='Note')
     active = fields.Boolean(default=True)
-    loan_ids = fields.One2many('office.asset.loan', 'asset_id', string='Loans')
+    loan_ids = fields.One2many(
+        'office.asset.loan', 'asset_id', string='Loans',
+        bypass_search_access=True,
+    )
     is_available = fields.Boolean(
         string='Available', compute='_compute_is_available',
     )
@@ -57,7 +60,7 @@ class OfficeAsset(models.Model):
     def _compute_is_available(self):
         for asset in self:
             asset.is_available = not any(
-                loan.state == 'borrowed' for loan in asset.loan_ids
+                loan.state == 'borrowed' for loan in asset.sudo().loan_ids
             )
 
     @api.depends('loan_ids')

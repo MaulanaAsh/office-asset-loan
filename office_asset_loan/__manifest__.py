@@ -7,6 +7,7 @@
     'license': 'LGPL-3',
     'depends': ['base'],
     'data': [
+        'security/office_asset_loan_security.xml',
         'security/ir.model.access.csv',
         'data/office_asset_loan_sequence.xml',
         'views/office_asset_views.xml',

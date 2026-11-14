@@ -96,7 +96,7 @@ class OfficeAssetLoan(models.Model):
                     'and cannot be borrowed.'
                 )
 
-            active_loan = self.search([
+            active_loan = self.sudo().search([
                 ('asset_id', '=', loan.asset_id.id),
                 ('state', '=', 'borrowed'),
                 ('id', '!=', loan.id),
