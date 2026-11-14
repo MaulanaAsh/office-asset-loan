@@ -68,6 +68,9 @@
                 <separator/>
                 <filter name="borrowed" string="Borrowed"
                         domain="[('state', '=', 'borrowed')]"/>
+                <filter name="overdue" string="Overdue"
+                        domain="[('state', '=', 'borrowed'),
+                                 ('due_date', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
                 <group>
                     <filter name="group_borrower" string="Borrower"
                             context="{'group_by': 'borrower_id'}"/>
