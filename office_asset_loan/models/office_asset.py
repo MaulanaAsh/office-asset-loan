@@ -42,6 +42,17 @@ class OfficeAsset(models.Model):
         string='Loan Count', compute='_compute_loan_count',
     )
 
+    def action_view_loans(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Loans',
+            'res_model': 'office.asset.loan',
+            'view_mode': 'list,form',
+            'domain': [('asset_id', '=', self.id)],
+            'context': {'default_asset_id': self.id},
+        }
+
     @api.depends('loan_ids.state')
     def _compute_is_available(self):
         for asset in self:
